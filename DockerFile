@@ -1,0 +1,36 @@
+#SIGA docker file
+
+FROM node:20-slim as development
+
+WORKDIR /home/node/renda-extra
+RUN apt-get update && apt-get upgrade -y && apt-get install -y
+
+COPY --chown=node:node package*.json ./
+
+RUN apt-get install libssl-dev -y
+RUN apt-get install openssl -y && \
+   rm -rf /var/cache/apk/*
+
+RUN openssl req -new -x509 -nodes -out /home/ssl.crt -keyout /home/ssl.key -days 3650 -subj '/CN=localhost'
+
+RUN apt-get install -y procps
+
+COPY --chown=node:node . . 
+
+RUN npm ci 
+
+RUN chmod 777 node_modules
+
+RUN npm run build
+
+RUN chmod 777 dist
+
+RUN chown -R node:node /home/node/renda-extra/dist
+
+RUN chmod 777 /home/node/renda-extra
+
+USER node
+
+CMD ["npm", "run", "renda-extra"]
+
+EXPOSE 3000
