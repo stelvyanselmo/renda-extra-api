@@ -13,7 +13,7 @@ async function bootstrap() {
     .addTag('DP - Banks')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('renda-extra-api', app, documentFactory);
+  SwaggerModule.setup('renda', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
 
